@@ -26,6 +26,16 @@ jobs:
           path: coverage
           destination: unit-test-coverage
 
+  deploy-aws:
+    docker:
+      - image: cimg/aws:2023.05 # Pre-installed with AWS CLI
+    steps:
+      - checkout
+      - run:
+          name: Deploy Build Assets to S3
+          command: |
+            aws s3 sync ./build s3://your-aws-s3-bucket-name --delete
+
 workflows:
   build_and_test:
     jobs:
