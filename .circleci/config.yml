@@ -34,9 +34,18 @@ jobs:
       - run:
           name: Deploy Build Assets to S3
           command: |
-            aws s3 sync ./build s3://your-aws-s3-bucket-name --delete
+            aws s3 sync ./build s3://my-circleci-build-bucket-react --delete
 
 workflows:
   build_and_test:
     jobs:
       - build
+      - browser-testing:
+        requires:
+          - build-and-test
+      - deploy-to-aws:
+          requires:
+            - browser-testing
+          filters:
+            branches:
+              only: main
