@@ -25,12 +25,20 @@ jobs:
       - store_artifacts:
           path: coverage
           destination: unit-test-coverage
+      - run:
+          name: Build
+          command: npm run build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - build
 
   deploy-aws:
     docker:
       - image: cimg/aws:2023.05 # Pre-installed with AWS CLI
     steps:
-      - checkout
+      - attach_workspace:
+          at: .
       - run:
           name: Deploy Build Assets to S3
           command: |
