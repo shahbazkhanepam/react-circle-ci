@@ -25,30 +25,47 @@ jobs:
       - store_artifacts:
           path: coverage
           destination: unit-test-coverage
-      - run:
-          name: Build
-          command: npm run build
-      - persist_to_workspace:
-          root: .
-          paths:
-            - build
 
   deploy-aws:
     docker:
       - image: cimg/aws:2023.05 # Pre-installed with AWS CLI
     steps:
-      - attach_workspace:
-          at: .
+      - checkout
       - run:
           name: Deploy Build Assets to S3
           command: |
             aws s3 sync ./build s3://my-circleci-build-bucket-react --delete
+
+  deploy-to-vercel:
+    docker:
+      - image: cimg/node:18.16.0
+    steps:
+      - checkout
+      - run:
+          name: Install Vercel CLI
+          command: npm install --global vercel
+      - run:
+          name: Pull Vercel Environment Info
+          # Uses the VERCEL_ORG_ID and VERCEL_PROJECT_ID  automatically
+          command: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+      - run:
+          name: Build Project Artifacts
+          command: vercel build --prod --token=$VERCEL_TOKEN
+      - run:
+          name: Deploy Project Artifacts to Vercel
+          command: vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
 
 workflows:
   build_and_test:
     jobs:
       - build
       - deploy-aws:
+          requires:
+            - build
+          filters:
+            branches:
+              only: main
+      - deploy-to-vercel:
           requires:
             - build
           filters:
