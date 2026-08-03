@@ -69,11 +69,11 @@ jobs:
           name: Deploy to Vercel
           command: |
             if [ -z "$VERCEL_ORG_ID" ]; then
-              vercel deploy ./build --prod --confirm \
+              vercel deploy ./build --prod --yes \
                 --token="$VERCEL_TOKEN" \
                 --project="$VERCEL_PROJECT_ID"
             else
-              vercel deploy ./build --prod --confirm \
+              vercel deploy ./build --prod --yes \
                 --token="$VERCEL_TOKEN" \
                 --project="$VERCEL_PROJECT_ID" \
                 --scope="$VERCEL_ORG_ID"
