@@ -38,12 +38,12 @@ jobs:
 
   deploy-to-vercel:
     docker:
-      - image: cimg/node:18.16.0
+      - image: cimg/node:20.18.1
     steps:
       - checkout
       - run:
           name: Install Vercel CLI
-          command: npm install --global vercel
+          command: sudo npm install --global vercel
       - run:
           name: Pull Vercel Environment Info
           # Uses the VERCEL_ORG_ID and VERCEL_PROJECT_ID  automatically
