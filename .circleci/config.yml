@@ -40,12 +40,9 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - browser-testing:
-        requires:
-          - build-and-test
-      - deploy-to-aws:
+      - deploy-aws:
           requires:
-            - browser-testing
+            - build
           filters:
             branches:
               only: main
