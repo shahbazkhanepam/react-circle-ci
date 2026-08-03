@@ -53,8 +53,12 @@ jobs:
           name: Install Vercel CLI
           command: sudo npm install --global vercel
       - run:
+          name: Link Vercel Project
+          command: |
+            mkdir -p .vercel
+            echo '{"orgId":"'"$VERCEL_ORG_ID"'","projectId":"'"$VERCEL_PROJECT_ID"'"}' > .vercel/project.json
+      - run:
           name: Pull Vercel Environment Info
-          # Uses the VERCEL_ORG_ID and VERCEL_PROJECT_ID  automatically
           command: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
       - run:
           name: Build Project Artifacts
