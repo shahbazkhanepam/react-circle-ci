@@ -54,12 +54,30 @@ jobs:
           name: Install Vercel CLI
           command: npm install --global vercel@latest
       - run:
+          name: Validate Vercel environment
+          command: |
+            if [ -z "$VERCEL_TOKEN" ]; then
+              echo "ERROR: VERCEL_TOKEN is not set"
+              exit 1
+            fi
+            if [ -z "$VERCEL_PROJECT_ID" ]; then
+              echo "ERROR: VERCEL_PROJECT_ID is not set"
+              exit 1
+            fi
+            vercel whoami --token="$VERCEL_TOKEN"
+      - run:
           name: Deploy to Vercel
           command: |
-            vercel deploy ./build --prod --confirm \
-              --token="$VERCEL_TOKEN" \
-              --project="$VERCEL_PROJECT_ID" \
-              --scope="$VERCEL_ORG_ID"
+            if [ -z "$VERCEL_ORG_ID" ]; then
+              vercel deploy ./build --prod --confirm \
+                --token="$VERCEL_TOKEN" \
+                --project="$VERCEL_PROJECT_ID"
+            else
+              vercel deploy ./build --prod --confirm \
+                --token="$VERCEL_TOKEN" \
+                --project="$VERCEL_PROJECT_ID" \
+                --scope="$VERCEL_ORG_ID"
+            fi
 
 workflows:
   build_and_test:
