@@ -48,24 +48,18 @@ jobs:
     docker:
       - image: cimg/node:20.18.1
     steps:
-      - checkout
+      - attach_workspace:
+          at: .
       - run:
           name: Install Vercel CLI
-          command: sudo npm install --global vercel
+          command: npm install --global vercel@latest
       - run:
-          name: Link Vercel Project
+          name: Deploy to Vercel
           command: |
-            mkdir -p .vercel
-            echo '{"orgId":"'"$VERCEL_ORG_ID"'","projectId":"'"$VERCEL_PROJECT_ID"'"}' > .vercel/project.json
-      - run:
-          name: Pull Vercel Environment Info
-          command: vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-      - run:
-          name: Build Project Artifacts
-          command: vercel build --prod --token=$VERCEL_TOKEN
-      - run:
-          name: Deploy Project Artifacts to Vercel
-          command: vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN
+            vercel deploy ./build --prod --confirm \
+              --token="$VERCEL_TOKEN" \
+              --project="$VERCEL_PROJECT_ID" \
+              --scope="$VERCEL_ORG_ID"
 
 workflows:
   build_and_test:
