@@ -64,7 +64,7 @@ jobs:
               echo "ERROR: VERCEL_PROJECT_ID is not set"
               exit 1
             fi
-            vercel whoami --token="$VERCEL_TOKEN"
+            echo "VERCEL_TOKEN and VERCEL_PROJECT_ID are set"
       - run:
           name: Deploy to Vercel
           command: |
