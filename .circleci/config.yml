@@ -28,10 +28,17 @@ jobs:
       - run:
           name: Build React App
           command: npm run build
+      - run:
+          name: Prepare Vercel prebuilt output
+          command: |
+            mkdir -p .vercel/output/static
+            cp -r build/. .vercel/output/static/
+            echo '{"version": 3}' > .vercel/output/config.json
       - persist_to_workspace:
           root: .
           paths:
             - build
+            - .vercel/output
 
   deploy-aws:
     docker:
@@ -69,11 +76,11 @@ jobs:
           name: Deploy to Vercel
           command: |
             if [ -z "$VERCEL_ORG_ID" ]; then
-              vercel deploy ./build --prod --yes \
+              vercel deploy --prebuilt --prod --yes \
                 --token="$VERCEL_TOKEN" \
                 --project="$VERCEL_PROJECT_ID"
             else
-              vercel deploy ./build --prod --yes \
+              vercel deploy --prebuilt --prod --yes \
                 --token="$VERCEL_TOKEN" \
                 --project="$VERCEL_PROJECT_ID" \
                 --scope="$VERCEL_ORG_ID"
